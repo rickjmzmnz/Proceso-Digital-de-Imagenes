@@ -15,6 +15,7 @@ from Convolucion import *
 from QuitarMarca import *
 from Letras import *
 from Recursiva import *
+from Histograma import *
 
 class Interfaz(Frame):
 
@@ -77,6 +78,7 @@ class Interfaz(Frame):
         self.filtroMenu.add_command(label="Quitar marca de agua", command = lambda: self.aplicaFiltro(13))
         self.filtroMenu.add_command(label="Recursiva gris", command = lambda: self.aplicaMosaico(2))
         self.filtroMenu.add_command(label="Recursiva color", command = lambda: self.aplicaMosaico(3))
+        self.filtroMenu.add_command(label="Equalizacion", command = lambda: self.aplicaFiltro(14))
         
         self.convolucionMenu = Menu(self.menuBar, tearoff=0)
 
@@ -222,6 +224,8 @@ class Interfaz(Frame):
                 self.nuevaImagen = filtroAzar(self.imagen,self.aplica)
             elif opcion == 13:
                 self.nuevaImagen = quitarMarca(self.imagen,self.aplica)
+            elif opcion == 14:
+                self.nuevaImagen = ecualizacion(self.imagen,self.aplica)
             imageAplica = ImageTk.PhotoImage(self.nuevaImagen)
             self.filtroVentana.image = imageAplica
             self.filtroVentana.create_image(imageAplica.width()/2, imageAplica.height()/2, anchor=CENTER, image=imageAplica, tags="bg_img")
