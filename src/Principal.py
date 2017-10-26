@@ -78,7 +78,13 @@ class Interfaz(Frame):
         self.filtroMenu.add_command(label="Quitar marca de agua", command = lambda: self.aplicaFiltro(13))
         self.filtroMenu.add_command(label="Recursiva gris", command = lambda: self.aplicaMosaico(2))
         self.filtroMenu.add_command(label="Recursiva color", command = lambda: self.aplicaMosaico(3))
-        self.filtroMenu.add_command(label="Equalizacion", command = lambda: self.aplicaFiltro(14))
+  
+        self.histogramaMenu = Menu(self.filtroMenu, tearoff=0)
+        self.histogramaMenu.add_command(label="Equalizacion", command = lambda: self.aplicaFiltro(14))
+        self.histogramaMenu.add_command(label="Equalizacion color", command = lambda: self.aplicaFiltro(16))
+        self.histogramaMenu.add_command(label="Ajuste", command = lambda: self.aplicaFiltro(15))
+        self.histogramaMenu.add_command(label="Ajuste color", command = lambda: self.aplicaFiltro(17))
+        self.filtroMenu.add_cascade(label="Histograma", menu=self.histogramaMenu)
         
         self.convolucionMenu = Menu(self.menuBar, tearoff=0)
 
@@ -226,6 +232,12 @@ class Interfaz(Frame):
                 self.nuevaImagen = quitarMarca(self.imagen,self.aplica)
             elif opcion == 14:
                 self.nuevaImagen = ecualizacion(self.imagen,self.aplica)
+            elif opcion == 15:
+                self.nuevaImagen = ajuste(self.imagen,self.aplica)
+            elif opcion == 16:
+                self.nuevaImagen = ecualizacionColor(self.imagen,self.aplica)
+            elif opcion == 17:
+                self.nuevaImagen = ajusteColor(self.imagen,self.aplica)
             imageAplica = ImageTk.PhotoImage(self.nuevaImagen)
             self.filtroVentana.image = imageAplica
             self.filtroVentana.create_image(imageAplica.width()/2, imageAplica.height()/2, anchor=CENTER, image=imageAplica, tags="bg_img")
