@@ -16,6 +16,7 @@ from QuitarMarca import *
 from Letras import *
 from Recursiva import *
 from Histograma import *
+from ATT import * 
 
 class Interfaz(Frame):
 
@@ -85,6 +86,8 @@ class Interfaz(Frame):
         self.histogramaMenu.add_command(label="Ajuste", command = lambda: self.aplicaFiltro(15))
         self.histogramaMenu.add_command(label="Ajuste color", command = lambda: self.aplicaFiltro(17))
         self.filtroMenu.add_cascade(label="Histograma", menu=self.histogramaMenu)
+      
+        self.filtroMenu.add_command(label="Filtro ATT", command = self.aplicaAtt)
         
         self.convolucionMenu = Menu(self.menuBar, tearoff=0)
 
@@ -617,7 +620,40 @@ class Interfaz(Frame):
         self.nombre = nombreA.get()
         self.cadena = cadenaA.get()
         palabra(self.imagen,self.aplica,self.entraX,self.entraY,self.nombre,self.cadena)
-        self.top.destroy()        
+        self.top.destroy()
+
+    
+    """
+    Ventana emergente para aplicar el tamanio del renglon al filtro Att
+    """
+    def aplicaAtt(self):
+        if self.filtroVentana.find_all() != ():
+            self.top = Toplevel()
+
+            self.label = Label (self.top, text= "Introduce el tamanio del renglon")
+            self.label.pack()
+
+            self.entrytext = IntVar()
+            Entry(self.top, textvariable=self.entrytext).pack()
+
+            self.buttontext = StringVar()
+            self.buttontext.set("Aplica filtro")
+            self.button = Button(self.top, textvariable=self.buttontext, command= lambda: self.sacaRenglon(self.entrytext)).pack()
+        else:
+            tkMessageBox.showwarning("Error","Escoge una imagen antes de aplicar un filtro")
+            
+    """
+    Al colocar un valor en la pantalla emergente para el filtro Att
+    Ese valor se le pasa a la funcion de filtroAtt
+    """
+    def sacaRenglon(self,valor):
+        
+        self.entrytext = valor.get()
+        self.nuevaImagen = filtroAtt(self.imagen,self.aplica,self.entrytext)
+        imageAplica = ImageTk.PhotoImage(self.nuevaImagen)
+        self.filtroVentana.image = imageAplica
+        self.filtroVentana.create_image(imageAplica.width()/2, imageAplica.height()/2, anchor=CENTER, image=imageAplica, tags="bg_img")
+        self.top.destroy()
         
 """
 Funcion main
