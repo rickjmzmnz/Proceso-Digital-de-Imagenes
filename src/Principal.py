@@ -16,7 +16,8 @@ from QuitarMarca import *
 from Letras import *
 from Recursiva import *
 from Histograma import *
-from ATT import * 
+from ATT import *
+from Semitonos import * 
 
 class Interfaz(Frame):
 
@@ -88,6 +89,10 @@ class Interfaz(Frame):
         self.filtroMenu.add_cascade(label="Histograma", menu=self.histogramaMenu)
       
         self.filtroMenu.add_command(label="Filtro ATT", command = self.aplicaAtt)
+
+        self.semiMenu = Menu(self.filtroMenu, tearoff=0)
+        self.semiMenu.add_command(label="Circulos", command = lambda: self.aplicaSemi(1))
+        self.filtroMenu.add_cascade(label="Semitonos", menu=self.semiMenu)
         
         self.convolucionMenu = Menu(self.menuBar, tearoff=0)
 
@@ -650,6 +655,44 @@ class Interfaz(Frame):
         
         self.entrytext = valor.get()
         self.nuevaImagen = filtroAtt(self.imagen,self.aplica,self.entrytext)
+        imageAplica = ImageTk.PhotoImage(self.nuevaImagen)
+        self.filtroVentana.image = imageAplica
+        self.filtroVentana.create_image(imageAplica.width()/2, imageAplica.height()/2, anchor=CENTER, image=imageAplica, tags="bg_img")
+        self.top.destroy()
+
+    """
+    Ventana emergente para dar el tamanio del mosaico para el filtro de semitonos
+    """
+    def aplicaSemi(self,opcion):
+        if self.filtroVentana.find_all() != ():
+            
+            self.top = Toplevel()
+
+            self.label = Label (self.top, text= "Introduce el tamanio del mosaico\nDa dos valores positivos para (x,y) ")
+            self.label.pack()
+
+            self.entraX = IntVar()
+            Entry(self.top, textvariable=self.entraX).pack()
+
+            self.entraY = IntVar()
+            Entry(self.top, textvariable=self.entraY).pack()
+
+            self.buttontext = StringVar()
+            self.buttontext.set("Genera imagen")
+            
+            self.button = Button(self.top, textvariable=self.buttontext, command= lambda: self.obtenSemi(self.entraX,self.entraY,opcion)).pack()
+        else:
+            tkMessageBox.showwarning("Error","Escoge una imagen antes de aplicar un filtro")
+
+    """
+    Con los valores de la ventana emergente 
+    Se les pasa a alguna funcion de los filtros de semitonos
+    """
+    def obtenSemi(self,valorX,valorY,opcion):
+        self.entraX = valorX.get()
+        self.entraY = valorY.get()
+        if(opcion == 1):
+            self.nuevaImagen = semitonosCirculos(self.imagen,self.aplica,self.entraX,self.entraY)
         imageAplica = ImageTk.PhotoImage(self.nuevaImagen)
         self.filtroVentana.image = imageAplica
         self.filtroVentana.create_image(imageAplica.width()/2, imageAplica.height()/2, anchor=CENTER, image=imageAplica, tags="bg_img")
