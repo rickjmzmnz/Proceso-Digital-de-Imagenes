@@ -92,6 +92,8 @@ class Interfaz(Frame):
 
         self.semiMenu = Menu(self.filtroMenu, tearoff=0)
         self.semiMenu.add_command(label="Circulos", command = lambda: self.aplicaSemi(1))
+        self.semiMenu.add_command(label="4Cuad", command = lambda: self.aplicaSemi(2))
+        self.semiMenu.add_command(label="9Cuad", command = lambda: self.aplicaSemi(3))
         self.filtroMenu.add_cascade(label="Semitonos", menu=self.semiMenu)
         
         self.convolucionMenu = Menu(self.menuBar, tearoff=0)
@@ -693,6 +695,10 @@ class Interfaz(Frame):
         self.entraY = valorY.get()
         if(opcion == 1):
             self.nuevaImagen = semitonosCirculos(self.imagen,self.aplica,self.entraX,self.entraY)
+        if(opcion == 2):
+            self.nuevaImagen = semitonos4Cuad(self.imagen,self.aplica,self.entraX,self.entraY)
+        if(opcion == 3):
+            self.nuevaImagen = semitonos9Cuad(self.imagen,self.aplica,self.entraX,self.entraY)
         imageAplica = ImageTk.PhotoImage(self.nuevaImagen)
         self.filtroVentana.image = imageAplica
         self.filtroVentana.create_image(imageAplica.width()/2, imageAplica.height()/2, anchor=CENTER, image=imageAplica, tags="bg_img")
