@@ -20,6 +20,7 @@ from ATT import *
 from Semitonos import * 
 from FiltroSepia import *
 from Dithering import *
+from Esteganografia import *
 
 class Interfaz(Frame):
 
@@ -100,6 +101,11 @@ class Interfaz(Frame):
 
         self.filtroMenu.add_command(label="Filtro Sepia", command = self.aplicaSepia)
         self.filtroMenu.add_command(label="Dithering", command = lambda: self.aplicaFiltro(18))
+
+        self.estegano = Menu(self.filtroMenu, tearoff=0)
+        self.estegano.add_command(label="Cifrar", command=self.aplicaCifrado)
+        self.estegano.add_command(label="Descifrar", command= lambda: self.aplicaFiltro(19))
+        self.filtroMenu.add_cascade(label="Esteganografia", menu=self.estegano)
         
         self.convolucionMenu = Menu(self.menuBar, tearoff=0)
 
@@ -255,6 +261,8 @@ class Interfaz(Frame):
                 self.nuevaImagen = ajusteColor(self.imagen,self.aplica)
             elif opcion == 18:
                 self.nuevaImagen = dithering(self.imagen,self.aplica)
+            elif opcion == 19:
+                self.nuevaImagen = descifrar(self.imagen)
             imageAplica = ImageTk.PhotoImage(self.nuevaImagen)
             self.filtroVentana.image = imageAplica
             self.filtroVentana.create_image(imageAplica.width()/2, imageAplica.height()/2, anchor=CENTER, image=imageAplica, tags="bg_img")
@@ -738,6 +746,38 @@ class Interfaz(Frame):
         
         self.entrytext = valor.get()
         self.nuevaImagen = filtroSepia(self.imagen,self.aplica,self.entrytext)
+        imageAplica = ImageTk.PhotoImage(self.nuevaImagen)
+        self.filtroVentana.image = imageAplica
+        self.filtroVentana.create_image(imageAplica.width()/2, imageAplica.height()/2, anchor=CENTER, image=imageAplica, tags="bg_img")
+        self.top.destroy()
+
+    """
+    Ventana emergente para dar un valor al aplicar el filtro sepia
+    """
+    def aplicaCifrado(self):
+        if self.filtroVentana.find_all() != ():
+            self.top = Toplevel()
+
+            self.label = Label (self.top, text= "Introduce el mensaje que quieres ocultar")
+            self.label.pack()
+
+            self.entrytext = StringVar()
+            Entry(self.top, textvariable=self.entrytext).pack()
+
+            self.buttontext = StringVar()
+            self.buttontext.set("Cifrar mensaje")
+            self.button = Button(self.top, textvariable=self.buttontext, command= lambda: self.sacaCifrado(self.entrytext)).pack()
+        else:
+            tkMessageBox.showwarning("Error","Escoge una imagen antes de aplicar un filtro")
+            
+    """
+    Al colocar un valor en la pantalla emergente para el brillo
+    Ese valor se le pasa a la funcion de filtroBrillo
+    """
+    def sacaCifrado(self,valor):
+        
+        self.entrytext = valor.get()
+        self.nuevaImagen = cifrar(self.imagen,self.entrytext)
         imageAplica = ImageTk.PhotoImage(self.nuevaImagen)
         self.filtroVentana.image = imageAplica
         self.filtroVentana.create_image(imageAplica.width()/2, imageAplica.height()/2, anchor=CENTER, image=imageAplica, tags="bg_img")
