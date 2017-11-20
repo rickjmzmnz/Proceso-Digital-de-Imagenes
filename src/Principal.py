@@ -21,6 +21,7 @@ from Semitonos import *
 from FiltroSepia import *
 from Dithering import *
 from Esteganografia import *
+from Estereograma import *
 
 class Interfaz(Frame):
 
@@ -104,9 +105,9 @@ class Interfaz(Frame):
 
         self.estegano = Menu(self.filtroMenu, tearoff=0)
         self.estegano.add_command(label="Cifrar", command=self.aplicaCifrado)
-        self.estegano.add_command(label="Descifrar", command= lambda: self.sacaDescifrado(self.imagen))
+        self.estegano.add_command(label="Descifrar", command= self.obtenDescifrado)
         self.filtroMenu.add_cascade(label="Esteganografia", menu=self.estegano)
-        
+
         self.convolucionMenu = Menu(self.menuBar, tearoff=0)
 
         self.blur = Menu(self.convolucionMenu, tearoff=0)
@@ -146,6 +147,8 @@ class Interfaz(Frame):
         self.menuBar.add_cascade(label="Convolucion", menu=self.convolucionMenu)
 
         self.menuBar.add_cascade(label="Letras", menu=self.letraMenu)
+
+        self.menuBar.add_command(label="Estereograma", command = self.aplicaEstereograma)
 
         self.menuBar.add_command(label="Salir", command = self.salir)
         
@@ -788,14 +791,59 @@ class Interfaz(Frame):
         self.top.destroy()
 
     """
+    Advierte que puede tardar el descifrado
+    """
+    def obtenDescifrado(self):
+        if self.filtroVentana.find_all() != ():
+            self.top2 = Toplevel()
+            self.label2 = Label(self.top2, text="Puede tardar un poco en descrifrar el mensaje")
+            self.label2.pack()
+            self.buttontext = StringVar()
+            self.buttontext.set("Descifrar mensaje")
+            self.button = Button(self.top2, textvariable=self.buttontext, command= self.sacaDescifrado).pack()
+        else:
+            tkMessageBox.showwarning("Error","Escoge una imagen antes de aplicar un filtro")
+            
+    """
     Obtiene el mensaje oculto de la imagen dada 
     """
-    def sacaDescifrado(self,imagen):
-        cadena = descifrar(imagen)
+    def sacaDescifrado(self):
+        cadena = descifrar(self.imagen)
         self.top = Toplevel()
         self.top.geometry("%dx%d%+d%+d" % (300, 200, 500, 250))
         self.label = Label(self.top, text="El mensaje oculto es " + cadena)
         self.label.pack()
+        self.top2.destroy()
+
+    """
+    Funcion que pide el nombre del nuevo archivo que se va a generar con el estereograma
+    """
+    def aplicaEstereograma(self):
+        self.top = Toplevel()
+
+        self.label2 = Label (self.top, text = "Introduce el nombre del nuevo archivo que se va a generar y busca el archivo del cual se va a generar el estereograma")
+        self.label2.pack()
+
+        self.nombre = StringVar()
+        Entry(self.top,textvariable=self.nombre).pack()
+            
+        self.buttontext = StringVar()
+        self.buttontext.set("Obten estereograma")
+        self.button = Button(self.top, textvariable=self.buttontext, command= lambda: self.sacaEstereograma(self.nombre)).pack()
+        
+    """
+    Busca el archivo que contiene el texto para generar el estereograma
+    Y crea un nuevo archivo con el estereograma
+    """
+    def sacaEstereograma(self,nombre):
+        archivo = tkFileDialog.askopenfilename()
+        self.nombre = nombre.get()
+        estereograma(archivo,self.nombre)
+        self.top2 = Toplevel()
+        self.label = Label(self.top2,text="El archivo ha sido creado")
+        self.label.pack()
+        self.top.destroy()
+    
         
 """
 Funcion main
