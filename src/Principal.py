@@ -22,6 +22,7 @@ from FiltroSepia import *
 from Dithering import *
 from Esteganografia import *
 from Estereograma import *
+from FotoMosaico import *
 
 class Interfaz(Frame):
 
@@ -93,6 +94,7 @@ class Interfaz(Frame):
         self.filtroMenu.add_cascade(label="Histograma", menu=self.histogramaMenu)
       
         self.filtroMenu.add_command(label="Filtro ATT", command = self.aplicaAtt)
+        self.filtroMenu.add_command(label="Foto Mosaico", command = self.aplicaFotoMosaico)
 
         self.semiMenu = Menu(self.filtroMenu, tearoff=0)
         self.semiMenu.add_command(label="Circulos", command = lambda: self.aplicaSemi(1))
@@ -844,6 +846,44 @@ class Interfaz(Frame):
         self.label.pack()
         self.top.destroy()
     
+    
+    """
+    Funcion que indica que va a tardar el foto mosaico y pide la carpeta de imagenes que se usara
+    """
+    def aplicaFotoMosaico(self):
+        if self.filtroVentana.find_all() != ():
+            self.top = Toplevel()
+            
+            self.label = Label (self.top, text= "Introduce el tamanio del mosaico\nDa dos valores positivos para (x,y) ")
+            self.label.pack()
+
+            self.entraX = IntVar()
+            Entry(self.top, textvariable=self.entraX).pack()
+
+            self.entraY = IntVar()
+            Entry(self.top, textvariable=self.entraY).pack()
+
+            self.label2 = Label (self.top, text = "Se va a tardar un poco en generar el foto mosaico")
+            self.label2.pack()
+            self.buttontext = StringVar()
+            self.buttontext.set("Obten fotomosaico")
+            self.button = Button(self.top, textvariable=self.buttontext, command= lambda: self.sacaFotoMosaico(self.entraX,self.entraY)).pack()
+        else:
+            tkMessageBox.showwarning("Error","Escoge una imagen antes de aplicar un filtro")
+
+    """
+    Se da la carpeta con las imagenes que se van a usar
+    Aplica el foto mosaico y lo muestra
+    """
+    def sacaFotoMosaico(self,valorX,valorY):
+        self.entraX = valorX.get()
+        self.entraY = valorY.get()
+        carpeta = tkFileDialog.askdirectory()
+        self.nuevaImagen = filtroFotoMosaico(self.imagen,self.aplica,carpeta,self.entraX,self.entraY)
+        imageAplica = ImageTk.PhotoImage(self.nuevaImagen)
+        self.filtroVentana.image = imageAplica
+        self.filtroVentana.create_image(imageAplica.width()/2, imageAplica.height()/2, anchor=CENTER, image=imageAplica, tags="bg_img")
+        self.top.destroy()
         
 """
 Funcion main
