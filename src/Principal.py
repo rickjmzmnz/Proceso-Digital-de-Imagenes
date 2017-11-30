@@ -879,13 +879,10 @@ class Interfaz(Frame):
         self.entraX = valorX.get()
         self.entraY = valorY.get()
         carpeta = tkFileDialog.askdirectory()
-        filtroFotoMosaico(self.imagen,self.aplica,carpeta,self.entraX,self.entraY)
-        """
-        self.nuevaImagen = 
+        self.nuevaImagen = filtroFotoMosaico(self.imagen,self.aplica,carpeta,self.entraX,self.entraY)
         imageAplica = ImageTk.PhotoImage(self.nuevaImagen)
         self.filtroVentana.image = imageAplica
         self.filtroVentana.create_image(imageAplica.width()/2, imageAplica.height()/2, anchor=CENTER, image=imageAplica, tags="bg_img")
-        """
         self.top.destroy()
         
 """

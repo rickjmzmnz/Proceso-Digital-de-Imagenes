@@ -18,6 +18,9 @@ def buscaImagen(path,imagen):
                 nueva = Image.open(l + "/" + imagen)
                 return nueva
 
+"""
+Escribe en un archivo el nombre de la imagen procesada y su promedio de rgb
+"""
 def guardaImagenes(path):
     lista = os.listdir(path)
     archivo = open("imagenes.txt","w")
@@ -28,7 +31,7 @@ def guardaImagenes(path):
         for image in imagesL:
             imagen = Image.open(l + "/" + image)
             elemento = calculaPromedio(imagen)
-            archivo.write(image + " " + str(elemento[0]) + " " + str(elemento[1]) + " " + str(elemento[2]) + "\n")
+            archivo.write(image + " " + str(elemento[0]) + " " + str(elemento[1]) + " " + str(elemento[2]) + " " + "\n")
             print(str(contador))
             contador += 1
     archivo.close()
@@ -42,6 +45,37 @@ def distanciaEuclidiana(r1,g1,b1,r2,g2,b2):
     bc = (b2-b1)**2
     dis = math.sqrt(rc+gc+bc)
     return dis
+
+"""
+Pasa la informacion del archivo imagenes.txt a una lista
+"""
+def sacaInfo():
+    lista = []
+    f = open("imagenes.txt","r")
+    imagenes = f.readlines()
+    for line in imagenes:
+        elemento = line.split(" ")
+        lista.append(elemento)
+    return lista
+
+"""
+Elige la mejor imagen a colocar en el mosaico
+"""
+def eligeImagen(lista,r,g,b):
+    n = None
+    imagen = None
+    for i in lista:
+        relem = int(i[1])
+        gelem = int(i[2])
+        belem = int(i[3])
+        dis = distanciaEuclidiana(r,g,b,relem,gelem,belem)
+        if(n == None):
+            n = dis
+            imagen = i[0]
+        if(dis < n):
+            imagen = i[0]
+    return imagen
+        
 
 """
 Calcula el valor promedio del rgb de la imagen
@@ -66,15 +100,13 @@ def calculaPromedio(imagen):
     promAzul = bprom/promedio
     return (promRojo,promVerde,promAzul)
 
-def filtroFotoMosaico(imagen,aplica,carpeta,mosX,mosY):
-    lista = guardaImagenes(carpeta)
-
 """
 Saca los valores promedios del mosaico que calcula
 Obtiene la representacion hexadecimal de esos valores
 y busca una imagen con esos valores para colocarla en el mosaico
-
+"""
 def filtroFotoMosaico(imagen,aplica,carpeta,mosX,mosY):
+    lista = sacaInfo()
     size = mosX,mosY
     posX = 0
     posY = 0
@@ -110,15 +142,11 @@ def filtroFotoMosaico(imagen,aplica,carpeta,mosX,mosY):
             gprom = 0
             bprom = 0
             promedio = 0
-            cadena = ""
+            cadena = eligeImagen(lista,promRojo,promVerde,promAzul)
             img = buscaImagen(carpeta,cadena)
-            if(img == None):
-                img = PIL.Image.new('RGB',(500,500))
             img = img.resize(size)
             aplica.paste(img,(posX,posY))
             posY += mosY
         posX += mosX
         posY = 0
     return aplica
-
-"""
