@@ -94,7 +94,6 @@ class Interfaz(Frame):
         self.filtroMenu.add_cascade(label="Histograma", menu=self.histogramaMenu)
       
         self.filtroMenu.add_command(label="Filtro ATT", command = self.aplicaAtt)
-        self.filtroMenu.add_command(label="Foto Mosaico", command = self.aplicaFotoMosaico)
 
         self.semiMenu = Menu(self.filtroMenu, tearoff=0)
         self.semiMenu.add_command(label="Circulos", command = lambda: self.aplicaSemi(1))
@@ -109,6 +108,11 @@ class Interfaz(Frame):
         self.estegano.add_command(label="Cifrar", command=self.aplicaCifrado)
         self.estegano.add_command(label="Descifrar", command= self.obtenDescifrado)
         self.filtroMenu.add_cascade(label="Esteganografia", menu=self.estegano)
+
+        self.fotoMosaico = Menu(self.filtroMenu, tearoff=0)
+        self.fotoMosaico.add_command(label="Genera archivo de imagenes", command= self.generaArchivo)
+        self.fotoMosaico.add_command(label="Genera imagen", command= self.aplicaFotoMosaico)
+        self.filtroMenu.add_cascade(label="Foto Mosaico", menu=self.fotoMosaico)
 
         self.convolucionMenu = Menu(self.menuBar, tearoff=0)
 
@@ -863,11 +867,21 @@ class Interfaz(Frame):
             self.entraY = IntVar()
             Entry(self.top, textvariable=self.entraY).pack()
 
-            self.label2 = Label (self.top, text = "Se va a tardar un poco en generar el foto mosaico")
-            self.label2.pack()
+            self.label3 = Label(self.top, text="Introduce el nombre del archivo que contiene la informacion de las imagenes a usar")
+            self.label3.pack()
+
+            self.archivo = StringVar()
+            Entry(self.top, textvariable=self.archivo).pack()
+
+            self.label4 = Label (self.top, text="Selecciona la carpeta con las imagenes a usar")
+            self.label4.pack()
+            
             self.buttontext = StringVar()
             self.buttontext.set("Obten fotomosaico")
-            self.button = Button(self.top, textvariable=self.buttontext, command= lambda: self.sacaFotoMosaico(self.entraX,self.entraY)).pack()
+            self.button = Button(self.top, textvariable=self.buttontext, command= lambda: self.sacaFotoMosaico(self.entraX,self.entraY,self.archivo)).pack()
+
+            self.label2 = Label (self.top, text = "Va a tardar en generar el foto mosaico")
+            self.label2.pack()
         else:
             tkMessageBox.showwarning("Error","Escoge una imagen antes de aplicar un filtro")
 
@@ -875,14 +889,44 @@ class Interfaz(Frame):
     Se da la carpeta con las imagenes que se van a usar
     Aplica el foto mosaico y lo muestra
     """
-    def sacaFotoMosaico(self,valorX,valorY):
+    def sacaFotoMosaico(self,valorX,valorY,nombre):
         self.entraX = valorX.get()
         self.entraY = valorY.get()
+        self.archivo = nombre.get()
         carpeta = tkFileDialog.askdirectory()
-        self.nuevaImagen = filtroFotoMosaico(self.imagen,self.aplica,carpeta,self.entraX,self.entraY)
+        self.nuevaImagen = filtroFotoMosaico(self.imagen,self.aplica,carpeta,self.entraX,self.entraY,self.archivo)
         imageAplica = ImageTk.PhotoImage(self.nuevaImagen)
         self.filtroVentana.image = imageAplica
         self.filtroVentana.create_image(imageAplica.width()/2, imageAplica.height()/2, anchor=CENTER, image=imageAplica, tags="bg_img")
+        self.top.destroy()
+
+    """
+    Pregunta por la carpeta que contiene las imagenes a usar para el fotomosaico
+    """
+    def generaArchivo(self):
+        if self.filtroVentana.find_all() != ():
+            self.top = Toplevel()
+            self.label2 = Label(self.top, text="Da un nombre al archivo .txt que se va a generar")
+            self.label2.pack()
+            self.nombre = StringVar()
+            Entry(self.top, textvariable=self.nombre).pack()
+            self.label = Label (self.top, text= "Selecciona la carpeta con las imagenes que se usaran para el fotomosaico")
+            self.label.pack()
+            self.buttontext = StringVar()
+            self.buttontext.set("Selecciona carpeta")
+            self.button = Button(self.top, textvariable=self.buttontext, command= lambda: self.generaArchivoImg(self.nombre)).pack()
+            self.label3 = Label(self.top, text="Se va a tardar en generar el archivo")
+            self.label3.pack()
+        else:
+            tkMessageBox.showwarning("Error","Escoge una imagen antes de aplicar un filtro")
+
+    """
+    Genera el archivo de texto que se llamara imagenes.txt con la informacion de las imagenes a usar
+    """
+    def generaArchivoImg(self,archivo):
+        self.nombre = archivo.get()
+        carpeta = tkFileDialog.askdirectory()
+        guardaImagenes(carpeta,self.nombre)
         self.top.destroy()
         
 """

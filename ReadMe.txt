@@ -37,3 +37,6 @@ Tenemos la opción de guardar la imagen con el filtro aplicado en formato jpg o 
 
 En la pestaña de filtros se puede seleccionar el filtro que se quiere aplicar
 Y en la pestaña de convolucion se puede seleccionar todo filtro que use esa tećnica
+
+Para generar el fotomosaico, se agrega el archivo imagenesCom.txt y se necesita la carpeta de imagenes que nos entregaron en clase
+Se tarda en generar el fotomosaico de acuerdo al tamano del mosaico

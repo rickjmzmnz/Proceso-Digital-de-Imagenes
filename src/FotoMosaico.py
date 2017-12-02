@@ -12,7 +12,7 @@ def buscaImagen(path,imagen):
     lista = os.listdir(path)
     for i in lista:   
         l = path + "/" + str(i)
-        imagesL = [f for f in os.listdir(l) if os.path.splitext(f)[-1] == '.JPG']
+        imagesL = [f for f in os.listdir(l) if os.path.splitext(f)[-1] == '.JPG' or os.path.splitext(f)[-1] == '.jpg']
         for image in imagesL:
             if(imagen == image):
                 nueva = Image.open(l + "/" + imagen)
@@ -21,19 +21,19 @@ def buscaImagen(path,imagen):
 """
 Escribe en un archivo el nombre de la imagen procesada y su promedio de rgb
 """
-def guardaImagenes(path):
+def guardaImagenes(path,nombre):
     lista = os.listdir(path)
-    archivo = open("imagenes.txt","w")
-    contador = 1
+    archivo = open(nombre + ".txt","w")
     for i in lista:   
         l = path + "/" + str(i)
         imagesL = [f for f in os.listdir(l) if os.path.splitext(f)[-1] == '.JPG' or os.path.splitext(f)[-1] == '.jpg']
-        for image in imagesL:
-            imagen = Image.open(l + "/" + image)
-            elemento = calculaPromedio(imagen)
-            archivo.write(image + " " + str(elemento[0]) + " " + str(elemento[1]) + " " + str(elemento[2]) + " " + "\n")
-            print(str(contador))
-            contador += 1
+        try:
+            for image in imagesL:
+                imagen = Image.open(l + "/" + image)
+                elemento = calculaPromedio(imagen)
+                archivo.write(image + " " + str(elemento[0]) + " " + str(elemento[1]) + " " + str(elemento[2]) + " " + "\n")
+        except IOError:
+            pass
     archivo.close()
             
 """
@@ -49,9 +49,9 @@ def distanciaEuclidiana(r1,g1,b1,r2,g2,b2):
 """
 Pasa la informacion del archivo imagenes.txt a una lista
 """
-def sacaInfo():
+def sacaInfo(archivo):
     lista = []
-    f = open("imagenes.txt","r")
+    f = open(archivo + ".txt","r")
     imagenes = f.readlines()
     for line in imagenes:
         elemento = line.split(" ")
@@ -68,7 +68,7 @@ def eligeImagen(lista,r,g,b):
         relem = int(i[1])
         gelem = int(i[2])
         belem = int(i[3])
-        dis = distanciaEuclidiana(r,g,b,relem,gelem,belem)
+        dis = distanciaEuclidiana(relem,gelem,belem,r,g,b)
         if(n == None):
             n = dis
             imagen = i[0]
@@ -105,8 +105,8 @@ Saca los valores promedios del mosaico que calcula
 Obtiene la representacion hexadecimal de esos valores
 y busca una imagen con esos valores para colocarla en el mosaico
 """
-def filtroFotoMosaico(imagen,aplica,carpeta,mosX,mosY):
-    lista = sacaInfo()
+def filtroFotoMosaico(imagen,aplica,carpeta,mosX,mosY,archivo):
+    lista = sacaInfo(archivo)
     size = mosX,mosY
     posX = 0
     posY = 0
