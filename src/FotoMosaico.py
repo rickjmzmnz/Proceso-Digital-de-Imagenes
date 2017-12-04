@@ -68,11 +68,12 @@ def eligeImagen(lista,r,g,b):
         relem = int(i[1])
         gelem = int(i[2])
         belem = int(i[3])
-        dis = distanciaEuclidiana(relem,gelem,belem,r,g,b)
+        dis = distanciaEuclidiana(r,g,b,relem,gelem,belem)
         if(n == None):
             n = dis
             imagen = i[0]
         if(dis < n):
+            n = dis
             imagen = i[0]
     return imagen
         
